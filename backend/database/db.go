@@ -7,11 +7,16 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 var DB *pgx.Conn
 
-func initDb(){
+func InitDb() {
+	err := godotenv.Load()
+  	if err != nil {
+  	  log.Fatal("Error loading .env file")
+  	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -36,3 +41,11 @@ func initDb(){
 	DB = conn
 }
 
+func CloseDb(db *pgx.Conn) {
+	ctx, cancel := context.WithTimeout(context.Background(),3* time.Second)
+	defer cancel()
+	err := db.Close(ctx)
+	if err!=nil {
+		log.Printf("Warning: DB close error: %v\n", err)
+	}
+}
