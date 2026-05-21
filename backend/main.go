@@ -9,15 +9,17 @@ import (
 )
 
 func main() {
-	database.InitDb()
-
 	sig  := make(chan os.Signal,1)
 	signal.Notify(sig, syscall.SIGABRT, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
+
+	pool := database.InitDb()
+	defer pool.Close()
+	server := server.New(pool)
+
 	go func(){
 		server.StartServer()
 	}()
 
 	<-sig
 	server.StopServer()
-	database.CloseDb(database.DB)
 }

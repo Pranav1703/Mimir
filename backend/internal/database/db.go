@@ -6,13 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
-var DB *pgx.Conn
-
-func InitDb() {
+func InitDb() *pgxpool.Pool{
 	err := godotenv.Load()
   	if err != nil {
   	  log.Fatal("Error loading .env file")
@@ -24,28 +22,20 @@ func InitDb() {
 	if dbURL == "" {
 		log.Fatal("DB_URL environment variable is not set")
 	}
-	conn, err := pgx.Connect(ctx, dbURL)
-	if err != nil {
-		log.Fatalln("Failed to connect to DB.\n",err)
+    config, err := pgxpool.ParseConfig(dbURL)
+    if err != nil { 
+		log.Fatal(err)
 	}
-
-	if err :=conn.Ping(ctx); err != nil {
-		log.Fatalln(err)
+    
+	config.MaxConns = 10
+    config.MinConns = 2
+    config.MaxConnLifetime = 1 * time.Hour
+    config.HealthCheckPeriod = 30 * time.Second
+    
+	pool, err := pgxpool.NewWithConfig(ctx, config)
+    if err != nil { 
+		log.Fatal(err)
 	}
-
-	_, err = conn.Exec(ctx,"CREATE EXTENSION IF NOT EXISTS vector")
-	if err != nil {
-		log.Fatalf("Failed to create extension: %v\n", err)
-	}
-	log.Println("Successfully connected to DB")
-	DB = conn
-}
-
-func CloseDb(db *pgx.Conn) {
-	ctx, cancel := context.WithTimeout(context.Background(),3* time.Second)
-	defer cancel()
-	err := db.Close(ctx)
-	if err!=nil {
-		log.Printf("Warning: DB close error: %v\n", err)
-	}
+	log.Println("Successfully connected to DB pool")
+	return pool   
 }
