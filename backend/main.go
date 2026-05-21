@@ -10,7 +10,7 @@ import (
 
 func main() {
 	sig  := make(chan os.Signal,1)
-	signal.Notify(sig, syscall.SIGABRT, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
+	signal.Notify(sig, syscall.SIGABRT, syscall.SIGINT, syscall.SIGTERM)
 
 	pool := database.InitDb()
 	defer pool.Close()

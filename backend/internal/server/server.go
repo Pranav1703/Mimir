@@ -31,6 +31,7 @@ func (s *Server) addRoutes(){
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Mimir server healthy."))
 	})
+	UserRouter(s.router, s.db)
 }
 
 func (s *Server) StartServer() {
