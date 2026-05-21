@@ -1,8 +1,8 @@
 package main
 
 import (
-	"mimir/database"
-	"mimir/server"
+	"mimir/internal/database"
+	"mimir/internal/server"
 	"os"
 	"os/signal"
 	"syscall"
