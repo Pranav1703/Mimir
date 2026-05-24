@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { useAuth } from "./context/AuthContext";
+import Header from "../components/Header";
 
 const NEON_CYAN = "#00f0ff";
 const NEON_LIGHT_BLUE = "#66d9ff";
@@ -17,7 +17,6 @@ interface Message {
 }
 
 function Chat() {
-  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const repoUrl = (location.state as { repoUrl?: string })?.repoUrl || "";
@@ -63,29 +62,12 @@ function Chat() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-gray-200 font-mono flex flex-col">
-      {/* HEADER */}
-      <motion.header
-        className="border-b"
-        style={{ borderColor: `${NEON_CYAN}22` }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <motion.h1
-            className="text-2xl font-bold tracking-widest uppercase"
-            style={{
-              textShadow: `0 0 20px ${NEON_CYAN}, 0 0 40px ${NEON_CYAN}66`,
-              color: NEON_CYAN,
-            }}
-          >
-            Mimir
-          </motion.h1>
-          <div className="flex items-center gap-3">
+      <Header
+        right={
+          <>
             <span className="text-xs text-gray-500 truncate max-w-48" title={repoUrl}>
               {repoUrl.replace("https://github.com/", "")}
             </span>
-            <span className="text-xs text-gray-600">{user?.username}</span>
             <motion.button
               onClick={() => navigate("/")}
               className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-300 transition-colors"
@@ -93,18 +75,10 @@ function Chat() {
             >
               New
             </motion.button>
-            <motion.button
-              onClick={logout}
-              className="text-xs uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-colors"
-              whileHover={{ scale: 1.05 }}
-            >
-              Logout
-            </motion.button>
-          </div>
-        </div>
-      </motion.header>
+          </>
+        }
+      />
 
-      {/* CHAT AREA */}
       <main className="flex-1 flex flex-col">
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
@@ -191,7 +165,6 @@ function Chat() {
           </div>
         </div>
 
-        {/* CHAT INPUT */}
         <div className="max-w-3xl mx-auto px-4 pb-6 w-full">
           <motion.form
             onSubmit={handleChat}
