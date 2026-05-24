@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"log"
-	"os"
+	"mimir/internal/utils"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,7 +18,7 @@ func InitDb() *pgxpool.Pool{
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	dbURL := os.Getenv("DB_URL")
+	dbURL := utils.GetEnv("DB_URL")
 	if dbURL == "" {
 		log.Fatal("DB_URL environment variable is not set")
 	}
