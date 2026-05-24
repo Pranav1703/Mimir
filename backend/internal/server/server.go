@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -27,7 +28,15 @@ func New(db *pgxpool.Pool) *Server{
 }
 
 func (s *Server) addRoutes(){	
-	s.router.Use(middleware.Logger)
+	s.router.Use(middleware.Logger)	
+	s.router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true, 
+		MaxAge:           300,
+	}))
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Mimir server healthy."))
 	})
@@ -35,6 +44,9 @@ func (s *Server) addRoutes(){
 }
 
 func (s *Server) StartServer() {
+
+
+	
     s.http = &http.Server{
         Addr:    "127.0.0.1:3002",
         Handler: s.router,

@@ -3,6 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"mimir/internal/middlewares"
 	"mimir/internal/utils"
 	"net/http"
 
@@ -13,6 +15,7 @@ type userBody struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
 type userResponse struct {
 	ID       string    `json:"id"`
 	Username string 	`json:"username"`
@@ -39,7 +42,8 @@ func (h *Handler)SignUp(w http.ResponseWriter, r *http.Request) {
 	hash, err :=bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorResponse{Error: fmt.Sprintln("error while hashing password. " + err.Error())})
+		json.NewEncoder(w).Encode(errorResponse{Error: fmt.Sprintln("error while hashing password. ")})
+		log.Println("error while hashing password. " + err.Error())
 		return
 	}
 	var res userResponse
@@ -51,7 +55,8 @@ func (h *Handler)SignUp(w http.ResponseWriter, r *http.Request) {
 	).Scan(&res.ID,&res.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorResponse{Error: fmt.Sprintln("failed to create user. " + err.Error())})
+		json.NewEncoder(w).Encode(errorResponse{Error: fmt.Sprintln("user already exists.")})
+		log.Println("failed to create user. " + err.Error())
 		return
 	}
 
@@ -59,6 +64,7 @@ func (h *Handler)SignUp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 	    w.WriteHeader(http.StatusInternalServerError)
 	    json.NewEncoder(w).Encode(errorResponse{Error: "failed to generate token"})
+		log.Println("failed to generate token")
 	    return
 	}
 	http.SetCookie(w, &http.Cookie{
@@ -71,7 +77,10 @@ func (h *Handler)SignUp(w http.ResponseWriter, r *http.Request) {
 	})
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "user created and logged in successfully."})
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "user created and logged in successfully.",
+		"user": res.Username,
+	})
 }
 
 func (h *Handler)Login(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +120,7 @@ func (h *Handler)Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 	    w.WriteHeader(http.StatusInternalServerError)
 	    json.NewEncoder(w).Encode(errorResponse{Error: "failed to generate token"})
+		log.Println("failed to generate token")
 	    return
 	}
 	http.SetCookie(w, &http.Cookie{
@@ -122,7 +132,10 @@ func (h *Handler)Login(w http.ResponseWriter, r *http.Request) {
 	    MaxAge:   604800, // 7 days in seconds
 	})
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "user logged in."})
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "user logged in.",
+		"user": username,
+	})
 
 }
 
@@ -136,6 +149,15 @@ func (h *Handler)Logout(w http.ResponseWriter, r *http.Request) {
 	    MaxAge:   -1,
 	})
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "logged out"})
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "logged out",
+	})
 }
 
+func (h *Handler)Me(w http.ResponseWriter, r *http.Request) {
+    claims := middlewares.UserFromContext(r.Context())
+    json.NewEncoder(w).Encode(map[string]string{
+        "id":       claims.Subject,
+        "username": claims.Username,
+    })
+}

@@ -2,8 +2,10 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"mimir/internal/utils"
+	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -36,6 +38,31 @@ func InitDb() *pgxpool.Pool{
     if err != nil { 
 		log.Fatal(err)
 	}
-	log.Println("Successfully connected to DB pool")
+	err = pool.Ping(ctx)
+	if err!=nil {
+		log.Fatal(err)
+	}
+
+	err = applySchema(pool, "./internal/database/schema.sql")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println("Successfully connected to DB pool and applied schema file")
 	return pool   
+}
+
+func applySchema(pool *pgxpool.Pool, filePath string) error{
+	schema, err := os.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("unable to read schema file: %w", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	defer cancel()
+
+	_, err = pool.Exec(ctx, string(schema))
+	if err != nil {
+		return fmt.Errorf("failed to execute schema: %w", err)
+	}
+	return nil
 }

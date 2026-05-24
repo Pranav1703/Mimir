@@ -19,6 +19,7 @@ func UserRouter(r *chi.Mux, db *pgxpool.Pool) {
 		r.Group(func(r chi.Router) {
 			r.Use(middlewares.VerifyToken)
 			r.Post("/logout", h.Logout)
+			r.Get("/me", h.Me)
 		})
 	})
 

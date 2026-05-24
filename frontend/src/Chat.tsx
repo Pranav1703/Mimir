@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { useAuth } from "./context/AuthContext";
 
 const NEON_CYAN = "#00f0ff";
 const NEON_LIGHT_BLUE = "#66d9ff";
@@ -16,6 +17,7 @@ interface Message {
 }
 
 function Chat() {
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const repoUrl = (location.state as { repoUrl?: string })?.repoUrl || "";
@@ -83,12 +85,20 @@ function Chat() {
             <span className="text-xs text-gray-500 truncate max-w-48" title={repoUrl}>
               {repoUrl.replace("https://github.com/", "")}
             </span>
+            <span className="text-xs text-gray-600">{user?.username}</span>
             <motion.button
               onClick={() => navigate("/")}
               className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-300 transition-colors"
               whileHover={{ scale: 1.05 }}
             >
               New
+            </motion.button>
+            <motion.button
+              onClick={logout}
+              className="text-xs uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-colors"
+              whileHover={{ scale: 1.05 }}
+            >
+              Logout
             </motion.button>
           </div>
         </div>
