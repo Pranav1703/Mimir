@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"mimir/internal/utils"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -13,8 +14,8 @@ type userBody struct {
 	Password string `json:"password"`
 }
 type userResponse struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
+	ID       string    `json:"id"`
+	Username string 	`json:"username"`
 }
 
 type errorResponse struct {
@@ -54,8 +55,23 @@ func (h *Handler)SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := utils.GenerateToken(res.ID, res.Username)
+	if err != nil {
+	    w.WriteHeader(http.StatusInternalServerError)
+	    json.NewEncoder(w).Encode(errorResponse{Error: "failed to generate token"})
+	    return
+	}
+	http.SetCookie(w, &http.Cookie{
+	    Name:     "access_token",
+	    Value:    token,
+	    Path:     "/",
+	    HttpOnly: true,
+	    SameSite: http.SameSiteLaxMode,
+	    MaxAge:   604800, // 7 days in seconds
+	})
+
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "user created successfully."})
+	json.NewEncoder(w).Encode(map[string]string{"message": "user created and logged in successfully."})
 }
 
 func (h *Handler)Login(w http.ResponseWriter, r *http.Request) {
@@ -72,13 +88,14 @@ func (h *Handler)Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var id string
 	var username string
 	var hash string
 	err := h.DB.QueryRow(
 		r.Context(),
 		"SELECT * FROM users WHERE username=$1",
 		body.Username,
-	).Scan(&username, &hash)
+	).Scan(&id, &username, &hash)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(errorResponse{Error: "no users found."})
@@ -90,13 +107,35 @@ func (h *Handler)Login(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errorResponse{Error: "Wrong credentials"})
 		return		
 	}
-
+	token, err := utils.GenerateToken(id, username)
+	if err != nil {
+	    w.WriteHeader(http.StatusInternalServerError)
+	    json.NewEncoder(w).Encode(errorResponse{Error: "failed to generate token"})
+	    return
+	}
+	http.SetCookie(w, &http.Cookie{
+	    Name:     "access_token",
+	    Value:    token,
+	    Path:     "/",
+	    HttpOnly: true,
+	    SameSite: http.SameSiteLaxMode,
+	    MaxAge:   604800, // 7 days in seconds
+	})
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "user logged in."})
 
 }
 
 func (h *Handler)Logout(w http.ResponseWriter, r *http.Request) {
-
+	http.SetCookie(w, &http.Cookie{
+	    Name:     "access_token",
+	    Value:    "",
+	    Path:     "/",
+	    HttpOnly: true,
+	    SameSite: http.SameSiteLaxMode,
+	    MaxAge:   -1,
+	})
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "logged out"})
 }
 
