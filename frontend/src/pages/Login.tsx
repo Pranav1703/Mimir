@@ -4,8 +4,6 @@ import { motion } from "motion/react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-const NEON_CYAN = "#00f0ff";
-
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +27,7 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -39,8 +37,8 @@ function Login() {
         <motion.h1
           className="text-3xl font-bold tracking-widest uppercase text-center mb-8"
           style={{
-            textShadow: `0 0 20px ${NEON_CYAN}, 0 0 40px ${NEON_CYAN}66`,
-            color: NEON_CYAN,
+            textShadow: "0 0 20px var(--accent), 0 0 40px color-mix(in srgb, var(--accent) 40%, transparent)",
+            color: "var(--accent)",
           }}
         >
           Login
@@ -52,21 +50,25 @@ function Login() {
             placeholder="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full bg-[#12121a] border border-[#2a2a3a] rounded-lg px-4 py-3 text-sm outline-none transition-all focus:border-[#00f0ff] text-white placeholder:text-gray-600"
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg px-4 py-3 text-sm outline-none transition-all text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
+            onFocus={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
+            onBlur={(e) => e.currentTarget.style.borderColor = ""}
           />
           <input
             type="password"
             placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-[#12121a] border border-[#2a2a3a] rounded-lg px-4 py-3 text-sm outline-none transition-all focus:border-[#00f0ff] text-white placeholder:text-gray-600"
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg px-4 py-3 text-sm outline-none transition-all text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
+            onFocus={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
+            onBlur={(e) => e.currentTarget.style.borderColor = ""}
           />
 
           {error && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-400 text-xs text-center"
+              className="text-[var(--error)] text-xs text-center"
             >
               {error}
             </motion.p>
@@ -77,10 +79,10 @@ function Login() {
             disabled={!username || !password}
             className="w-full rounded-lg px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all disabled:opacity-30"
             style={{
-              backgroundColor: `${NEON_CYAN}18`,
-              color: NEON_CYAN,
-              border: `1px solid ${NEON_CYAN}55`,
-              boxShadow: `0 0 20px ${NEON_CYAN}22`,
+              backgroundColor: "color-mix(in srgb, var(--accent) 9%, transparent)",
+              color: "var(--accent)",
+              border: "1px solid color-mix(in srgb, var(--accent) 33%, transparent)",
+              boxShadow: "0 0 20px color-mix(in srgb, var(--accent) 13%, transparent)",
             }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -89,9 +91,9 @@ function Login() {
           </motion.button>
         </form>
 
-        <p className="text-gray-500 text-xs text-center mt-6">
+        <p className="text-[var(--text-dim)] text-xs text-center mt-6">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-[#00f0ff] hover:underline">
+          <Link to="/signup" className="text-[var(--accent)] hover:underline">
             Sign up
           </Link>
         </p>

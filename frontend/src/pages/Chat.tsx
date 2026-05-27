@@ -3,10 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import Header from "../components/Header";
 
-const NEON_CYAN = "#00f0ff";
-const NEON_LIGHT_BLUE = "#66d9ff";
-const NEON_GREY = "#888899";
-
 function classNames(...classes: (string | false | undefined | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -19,20 +15,20 @@ interface Message {
 function Chat() {
   const location = useLocation();
   const navigate = useNavigate();
-  const repoUrl = (location.state as { repoUrl?: string })?.repoUrl || "";
+  const articleUrl = (location.state as { articleUrl?: string })?.articleUrl || "";
 
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", content: "Repository analyzed successfully. Ask me anything about the code!" },
+    { role: "bot", content: "Article saved and summarized. Ask me anything about it!" },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!repoUrl) {
+    if (!articleUrl) {
       navigate("/");
     }
-  }, [repoUrl, navigate]);
+  }, [articleUrl, navigate]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -61,17 +57,20 @@ function Chat() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-gray-200 font-mono flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-secondary)] font-mono flex flex-col">
       <Header
         right={
           <>
-            <span className="text-xs text-gray-500 truncate max-w-48" title={repoUrl}>
-              {repoUrl.replace("https://github.com/", "")}
+            <span className="text-xs text-[var(--text-dim)] truncate max-w-48" title={articleUrl}>
+              {articleUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
             </span>
             <motion.button
               onClick={() => navigate("/")}
-              className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-300 transition-colors"
+              className="text-xs uppercase tracking-widest transition-colors"
+              style={{ color: "var(--text-dim)" }}
               whileHover={{ scale: 1.05 }}
+              onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+              onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-dim)"}
             >
               New
             </motion.button>
@@ -104,14 +103,14 @@ function Chat() {
                     style={
                       msg.role === "user"
                         ? {
-                            backgroundColor: `${NEON_LIGHT_BLUE}12`,
-                            border: `1px solid ${NEON_LIGHT_BLUE}22`,
-                            color: "#cce8f8",
+                            backgroundColor: "color-mix(in srgb, var(--accent-light) 7%, transparent)",
+                            border: "1px solid color-mix(in srgb, var(--accent-light) 13%, transparent)",
+                            color: "var(--text-secondary)",
                           }
                         : {
-                            backgroundColor: `${NEON_GREY}08`,
-                            border: `1px solid ${NEON_GREY}15`,
-                            color: "#c8c8d8",
+                            backgroundColor: "color-mix(in srgb, var(--accent-grey) 3%, transparent)",
+                            border: "1px solid color-mix(in srgb, var(--accent-grey) 8%, transparent)",
+                            color: "var(--text-muted)",
                           }
                     }
                   >
@@ -130,8 +129,8 @@ function Chat() {
                   <div
                     className="max-w-[85%] rounded-2xl rounded-bl-md px-4 py-3"
                     style={{
-                      backgroundColor: `${NEON_GREY}08`,
-                      border: `1px solid ${NEON_GREY}15`,
+                      backgroundColor: "color-mix(in srgb, var(--accent-grey) 3%, transparent)",
+                      border: "1px solid color-mix(in srgb, var(--accent-grey) 8%, transparent)",
                     }}
                   >
                     <motion.div
@@ -141,19 +140,19 @@ function Chat() {
                     >
                       <motion.span
                         className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: NEON_CYAN }}
+                        style={{ backgroundColor: "var(--accent)" }}
                         animate={{ y: [0, -6, 0] }}
                         transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
                       />
                       <motion.span
                         className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: NEON_CYAN }}
+                        style={{ backgroundColor: "var(--accent)" }}
                         animate={{ y: [0, -6, 0] }}
                         transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
                       />
                       <motion.span
                         className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: NEON_CYAN }}
+                        style={{ backgroundColor: "var(--accent)" }}
                         animate={{ y: [0, -6, 0] }}
                         transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
                       />
@@ -176,14 +175,14 @@ function Chat() {
             <input
               ref={inputRef}
               type="text"
-              placeholder="Ask about the codebase…"
+              placeholder="Ask about the article…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={loading}
-              className="flex-1 bg-[#12121a] border rounded-full px-5 py-3 text-sm outline-none transition-colors placeholder:text-gray-600 disabled:opacity-30 text-white"
+              className="flex-1 bg-[var(--bg-surface)] border rounded-full px-5 py-3 text-sm outline-none transition-colors placeholder:text-[var(--text-dim)] disabled:opacity-30 text-[var(--text-primary)]"
               style={{
-                borderColor: NEON_LIGHT_BLUE,
-                boxShadow: `0 0 8px ${NEON_LIGHT_BLUE}33`,
+                borderColor: "var(--accent-light)",
+                boxShadow: "0 0 8px color-mix(in srgb, var(--accent-light) 20%, transparent)",
               }}
             />
             <motion.button
@@ -191,10 +190,10 @@ function Chat() {
               disabled={!input.trim() || loading}
               className="rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-all disabled:opacity-30"
               style={{
-                backgroundColor: `${NEON_LIGHT_BLUE}20`,
-                color: NEON_LIGHT_BLUE,
-                border: `1px solid ${NEON_LIGHT_BLUE}44`,
-                boxShadow: `0 0 12px ${NEON_LIGHT_BLUE}22`,
+                backgroundColor: "color-mix(in srgb, var(--accent-light) 13%, transparent)",
+                color: "var(--accent-light)",
+                border: "1px solid color-mix(in srgb, var(--accent-light) 27%, transparent)",
+                boxShadow: "0 0 12px color-mix(in srgb, var(--accent-light) 13%, transparent)",
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

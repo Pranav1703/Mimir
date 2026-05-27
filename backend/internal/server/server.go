@@ -41,12 +41,10 @@ func (s *Server) addRoutes(){
 		w.Write([]byte("Mimir server healthy."))
 	})
 	UserRouter(s.router, s.db)
+	IngestRouter(s.router, s.db)
 }
 
 func (s *Server) StartServer() {
-
-
-	
     s.http = &http.Server{
         Addr:    "127.0.0.1:3002",
         Handler: s.router,

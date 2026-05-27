@@ -25,3 +25,11 @@ func UserRouter(r *chi.Mux, db *pgxpool.Pool) {
 
 
 }
+
+func IngestRouter(r *chi.Mux, db *pgxpool.Pool) {
+	h := handlers.New(db)
+
+	r.Route("/ingest", func(r chi.Router) {
+		r.Post("/link", h.ProcessLink)
+	})
+}
