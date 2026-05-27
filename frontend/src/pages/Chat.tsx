@@ -57,11 +57,11 @@ function Chat() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-secondary)] font-mono flex flex-col">
+    <div className="min-h-screen bg-(--bg-primary) text-(--text-secondary) font-mono flex flex-col">
       <Header
         right={
           <>
-            <span className="text-xs text-[var(--text-dim)] truncate max-w-48" title={articleUrl}>
+            <span className="text-xs text-(--text-dim) truncate max-w-48" title={articleUrl}>
               {articleUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
             </span>
             <motion.button
@@ -179,7 +179,7 @@ function Chat() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={loading}
-              className="flex-1 bg-[var(--bg-surface)] border rounded-full px-5 py-3 text-sm outline-none transition-colors placeholder:text-[var(--text-dim)] disabled:opacity-30 text-[var(--text-primary)]"
+              className="flex-1 bg-(--bg-surface) border rounded-full px-5 py-3 text-sm outline-none transition-colors placeholder:text-(--text-dim) disabled:opacity-30 text-(--text-primary)"
               style={{
                 borderColor: "var(--accent-light)",
                 boxShadow: "0 0 8px color-mix(in srgb, var(--accent-light) 20%, transparent)",

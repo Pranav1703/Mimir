@@ -27,7 +27,7 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-primary) flex flex-col items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ function Login() {
             placeholder="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg px-4 py-3 text-sm outline-none transition-all text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
+            className="w-full bg-(--bg-surface) border border-(--border-default) rounded-lg px-4 py-3 text-sm outline-none transition-all text-(--text-primary) placeholder:text-(--text-dim)"
             onFocus={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
             onBlur={(e) => e.currentTarget.style.borderColor = ""}
           />
@@ -59,7 +59,7 @@ function Login() {
             placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg px-4 py-3 text-sm outline-none transition-all text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
+            className="w-full bg-(--bg-surface) border border-(--border-default) rounded-lg px-4 py-3 text-sm outline-none transition-all text-(--text-primary) placeholder:text-(--text-dim)"
             onFocus={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
             onBlur={(e) => e.currentTarget.style.borderColor = ""}
           />
@@ -68,7 +68,7 @@ function Login() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-[var(--error)] text-xs text-center"
+              className="text-(--error) text-xs text-center"
             >
               {error}
             </motion.p>
@@ -91,9 +91,9 @@ function Login() {
           </motion.button>
         </form>
 
-        <p className="text-[var(--text-dim)] text-xs text-center mt-6">
+        <p className="text-(--text-dim) text-xs text-center mt-6">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-[var(--accent)] hover:underline">
+          <Link to="/signup" className="text-(--accent) hover:underline">
             Sign up
           </Link>
         </p>

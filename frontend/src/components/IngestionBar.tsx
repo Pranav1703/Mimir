@@ -41,7 +41,7 @@ export default function IngestionBar({
     <div className="relative">
       <form
         onSubmit={onChatSubmit}
-        className="flex items-center gap-2 w-full bg-[var(--bg-surface)] border rounded-full px-2 py-2 text-sm transition-all"
+        className="flex items-center gap-2 w-full bg-(--bg-surface) border rounded-full px-2 py-2 text-sm transition-all"
         style={{
           borderColor: "var(--border-default)",
         }}
@@ -95,7 +95,7 @@ export default function IngestionBar({
                             handleLinkAdd();
                           }
                         }}
-                        className="flex-1 bg-[var(--bg-primary)] border rounded-lg px-3 py-2 text-sm outline-none text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
+                        className="flex-1 bg-(--bg-primary) border rounded-lg px-3 py-2 text-sm outline-none text-(--text-primary) placeholder:text-(--text-dim)"
                         style={{ borderColor: "var(--border-default)" }}
                       />
                       <motion.button
@@ -153,7 +153,7 @@ export default function IngestionBar({
           value={chatValue}
           onChange={(e) => onChatChange(e.target.value)}
           disabled={loading}
-          className="flex-1 bg-transparent px-2 py-1 text-sm outline-none text-[var(--text-primary)] placeholder:text-[var(--text-dim)] disabled:opacity-50"
+          className="flex-1 bg-transparent px-2 py-1 text-sm outline-none text-(--text-primary) placeholder:text-(--text-dim) disabled:opacity-50"
         />
 
         <motion.button

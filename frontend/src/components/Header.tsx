@@ -27,7 +27,7 @@ function Header({ right }: { right?: ReactNode }) {
         </motion.h1>
         <div className="flex items-center gap-3">
           {right}
-          <span className="text-xs text-[var(--text-muted)]">{user?.username}</span>
+          <span className="text-xs text-(--text-muted)">{user?.username}</span>
           <motion.button
             onClick={toggleTheme}
             className="text-sm transition-colors"

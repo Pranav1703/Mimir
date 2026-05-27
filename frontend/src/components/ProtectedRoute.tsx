@@ -6,7 +6,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center">
         <div
           className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
           style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}

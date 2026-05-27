@@ -56,7 +56,7 @@ function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-secondary)] font-mono flex flex-col">
+    <div className="min-h-screen bg-(--bg-primary) text-(--text-secondary) font-mono flex flex-col">
       <Header />
 
       {mode === "start" ? (
@@ -81,7 +81,7 @@ function Home() {
             </motion.h1>
 
             <motion.p
-              className="text-[var(--text-muted)] mb-10 leading-relaxed"
+              className="text-(--text-muted) mb-10 leading-relaxed"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
