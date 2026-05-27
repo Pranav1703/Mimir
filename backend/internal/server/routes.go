@@ -1,8 +1,8 @@
 package server
 
 import (
-	"mimir/internal/handlers"
-	"mimir/internal/middlewares"
+	"Briefly/internal/handlers"
+	"Briefly/internal/middlewares"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

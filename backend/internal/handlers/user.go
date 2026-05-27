@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"mimir/internal/middlewares"
-	"mimir/internal/utils"
+	"Briefly/internal/middlewares"
+	"Briefly/internal/utils"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"

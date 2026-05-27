@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"mimir/internal/utils"
+	"Briefly/internal/utils"
 	"os"
 	"time"
 

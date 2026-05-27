@@ -3,7 +3,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"mimir/internal/utils"
+	"Briefly/internal/utils"
 )
 
 type contextKey string

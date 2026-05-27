@@ -1,8 +1,8 @@
 package main
 
 import (
-	"mimir/internal/database"
-	"mimir/internal/server"
+	"Briefly/internal/database"
+	"Briefly/internal/server"
 	"os"
 	"os/signal"
 	"syscall"
