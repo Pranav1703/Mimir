@@ -6,4 +6,13 @@ create table if not exists users (
     password varchar(200) not null
 );
 
+CREATE TABLE IF NOT EXISTS article_embeddings (
+    id SERIAL PRIMARY KEY,
+    url TEXT NOT NULL,
+    title TEXT NOT NULL,
+    chunk_text TEXT NOT NULL,
+    embedding vector(768) NOT NULL -- Locked to 768 dimensions for nomic-embed-text-v2-moe
+);
 
+CREATE INDEX IF NOT EXISTS article_embeddings_hnsw_idx 
+ON article_embeddings USING hnsw (embedding vector_cosine_ops);

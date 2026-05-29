@@ -2,6 +2,7 @@ package main
 
 import (
 	"Briefly/internal/database"
+	"Briefly/internal/handlers"
 	"Briefly/internal/server"
 	"os"
 	"os/signal"
@@ -21,5 +22,7 @@ func main() {
 	}()
 
 	<-sig
+	handlers.ShutdownBrowser()
 	server.StopServer()
+
 }

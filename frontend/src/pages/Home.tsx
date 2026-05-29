@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Header from "../components/Header";
 import IngestionBar from "../components/IngestionBar";
+import axios from "axios";
 
 interface Message {
   role: "user" | "bot";
@@ -16,12 +17,17 @@ function Home() {
   const [chatLoading, setChatLoading] = useState(false);
 
   function handleLinkAdd(url: string) {
-    setIngesting(true);
-    setTimeout(() => {
-      setIngesting(false);
-      setMode("chat");
-      setMessages([{ role: "bot", content: `Summarized **${url}**. Ask me anything about it!` }]);
-    }, 1500);
+    try {
+      setIngesting(true);
+      setTimeout(async() => {
+        setIngesting(false);
+        setMode("chat");
+        await axios.post(`${import.meta.env.VITE_SERVER_URL}/ingest/link`, {url: url}, {withCredentials: true})
+        setMessages([{ role: "bot", content: `Summarized <b>${url}<b>. Ask me anything about it!` }]);
+      }, 1500);      
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   function handleFilePick(name: string) {
@@ -41,7 +47,7 @@ function Home() {
     setMessages((prev) => [...prev, { role: "user", content: msg }]);
     setChatLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/chat", {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg }),

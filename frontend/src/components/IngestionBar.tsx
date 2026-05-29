@@ -32,6 +32,7 @@ export default function IngestionBar({
   function handleLinkAdd() {
     const url = linkValue.trim();
     if (!url) return;
+    
     onLinkAdd(url);
     setLinkValue("");
     setMenuOpen(false);

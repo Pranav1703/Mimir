@@ -1,6 +1,7 @@
 package server
 
 import (
+	"Briefly/internal/handlers"
 	"context"
 	"log"
 	"net/http"
@@ -60,4 +61,5 @@ func (s *Server) StopServer(){
     if err := s.http.Shutdown(ctx); err != nil {
         log.Printf("server forced shutdown: %v", err)
     }
+	handlers.ShutdownBrowser()
 }
