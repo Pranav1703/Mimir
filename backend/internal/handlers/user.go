@@ -106,7 +106,7 @@ func (h *Handler)Login(w http.ResponseWriter, r *http.Request) {
 		body.Username,
 	).Scan(&id, &username, &hash)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(errorResponse{Error: "no users found."})
 		return
 	}

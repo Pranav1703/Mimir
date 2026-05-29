@@ -7,14 +7,16 @@ import (
 	"github.com/joho/godotenv"
 )
 
+func LoadEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Note: No .env file detected; falling back to system environment variables.")
+	}
+}
+
 func GetEnv(key string) string {
-	err := godotenv.Load()
-  	if err != nil {
-  	  log.Fatal("Error loading .env file")
-  	}
 	value, ok := os.LookupEnv(key)
-	if(!ok){
-		log.Fatalln(key," is not set.")
+	if !ok {
+		log.Fatalf("Critical Error: Environment configuration parameter %s is missing.", key)
 	}
 	return value
 }

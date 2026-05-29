@@ -6,7 +6,7 @@ create table if not exists users (
     password varchar(200) not null
 );
 
-CREATE TABLE IF NOT EXISTS article_embeddings (
+CREATE TABLE IF NOT EXISTS document_chunks (
     id SERIAL PRIMARY KEY,
     url TEXT NOT NULL,
     title TEXT NOT NULL,

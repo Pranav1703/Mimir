@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
-	ollamaEndpoint = utils.GetEnv("EMBEDDING_MODEL_URL")
-	modelName      = utils.GetEnv("EMBEDDING_MODEL_NAME")
+	ollamaEndpoint string
+	modelName      string
+	configOnce     sync.Once
 )
 
 var httpClient = &http.Client{
@@ -31,8 +33,15 @@ type OllamaEmbedResponse struct {
 	Embeddings [][]float32 `json:"embeddings"`
 }
 
+func initConfig() {
+	ollamaEndpoint = utils.GetEnv("EMBEDDING_MODEL_URL")
+	modelName = utils.GetEnv("EMBEDDING_MODEL_NAME")
+}
 
 func Generate(ctx context.Context, text string) ([]float32, error) {
+
+	configOnce.Do(initConfig)
+	
 	reqPayload := OllamaEmbedRequest{
 		Model: modelName,
 		Input: text,

@@ -8,7 +8,7 @@ import (
 var jwtSecret []byte = []byte(GetEnv("JWT_SECRET"))
 
 type Claims struct {
-	Id string 		`jso:"id"`
+	Id string 		`json:"id"`
 	Username string `json:"username"`
 	jwt.RegisteredClaims
 }

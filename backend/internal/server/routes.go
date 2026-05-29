@@ -30,5 +30,6 @@ func IngestRouter(r *chi.Mux, db *pgxpool.Pool) {
 	r.Route("/ingest", func(r chi.Router) {
 		r.Use(middlewares.VerifyToken)
 		r.Post("/link", h.ProcessLink)
+		r.Post("/file", h.ProcessFile)
 	})
 }

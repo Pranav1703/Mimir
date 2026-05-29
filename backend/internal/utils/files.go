@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"regexp"
 
 	"github.com/ledongthuc/pdf"
 	"github.com/nguyenthenguyen/docx"
@@ -48,7 +47,6 @@ func ParseDocxFile(file io.Reader, size int64) (string, error) {
 
 	doc := replaceDocx.Editable()
 	raw := doc.GetContent()
-	re := regexp.MustCompile(`<[^>]*>`)
-	plain := re.ReplaceAllString(raw, "")
-	return plain, nil
+
+	return raw, nil
 }

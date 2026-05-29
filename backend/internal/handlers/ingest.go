@@ -128,7 +128,7 @@ func (h *Handler)ProcessLink(w http.ResponseWriter, r *http.Request) {
 
     	vecString := vectorToString(vector)
 
-    	query := `INSERT INTO article_embeddings (url, title, chunk_text, embedding) VALUES ($1, $2, $3, $4::vector)`
+    	query := `INSERT INTO document_chunks (url, title, chunk_text, embedding) VALUES ($1, $2, $3, $4::vector)`
     	_, err = h.DB.Exec(r.Context(), query, reqBody.Url, data.Title, chunk, vecString)
     	if err != nil {
     	    log.Println("failed to save to database table:", err)
@@ -197,7 +197,7 @@ func (h * Handler)ProcessFile(w http.ResponseWriter, r *http.Request) {
 
 		vecString := vectorToString(vector)
 
-		query := `INSERT INTO article_embeddings (url, title, chunk_text, embedding) VALUES ($1, $2, $3, $4::vector)`
+		query := `INSERT INTO document_chunks (url, title, chunk_text, embedding) VALUES ($1, $2, $3, $4::vector)`
 		_, err = h.DB.Exec(r.Context(), query, fileVirtualURL, filename, chunk, vecString)
 		if err != nil {
 			log.Println("Failed to save file vector to database:", err)
