@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"github.com/ledongthuc/pdf"
-	"github.com/nguyenthenguyen/docx"
+	"github.com/unidoc/unipdf/v4"
+	"github.com/gomutex/godocx"
 )
 
 func ParseTextFile(file io.Reader) (string, error) {
