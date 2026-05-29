@@ -43,6 +43,7 @@ func (s *Server) addRoutes(){
 	})
 	UserRouter(s.router, s.db)
 	IngestRouter(s.router, s.db)
+	ChatRouter(s.router, s.db)
 }
 
 func (s *Server) StartServer() {

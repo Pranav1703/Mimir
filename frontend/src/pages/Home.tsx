@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Header from "../components/Header";
 import IngestionBar from "../components/IngestionBar";
+import Sidebar from "../components/Sidebar";
+import LoadingSpinner from "../components/LoadingSpinner";
 import axios from "axios";
 
 interface Message {
@@ -15,6 +17,7 @@ function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   function handleLinkAdd(url: string) {
     try {
@@ -47,9 +50,10 @@ function Home() {
     setMessages((prev) => [...prev, { role: "user", content: msg }]);
     setChatLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/chat`, {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/chat/talk`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ message: msg }),
       });
       const data = await res.json();
@@ -63,11 +67,30 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-(--bg-primary) text-(--text-secondary) font-mono flex flex-col">
-      <Header />
+      <Header
+        right={
+          <motion.button
+            onClick={() => setSidebarOpen((p) => !p)}
+            className="shrink-0 rounded-lg w-8 h-8 flex items-center justify-center transition-colors"
+            style={{ color: "var(--text-dim)" }}
+            whileHover={{ scale: 1.1, color: "var(--text-secondary)" }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </motion.button>
+        }
+      />
 
-      {mode === "start" ? (
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 flex flex-col items-center justify-center p-4">
+      <div className="flex-1 flex relative">
+        <Sidebar open={sidebarOpen} />
+
+        {mode === "start" ? (
+          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -96,9 +119,33 @@ function Home() {
                 Your unified knowledge base. Save links, docs, and notes to chat with your second brain.
               </motion.p>
             </motion.div>
+
+            <AnimatePresence>
+              {ingesting && (
+                <motion.div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-10"
+                  style={{ backgroundColor: "color-mix(in srgb, var(--bg-primary) 85%, transparent)" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <LoadingSpinner size={32} />
+                  <motion.p
+                    className="text-sm tracking-widest uppercase"
+                    style={{ color: "var(--text-dim)" }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                  >
+                    Processing article…
+                  </motion.p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          <div className="px-4 pb-10 max-w-lg mx-auto w-full">
+          <div className="px-4 pb-10 max-w-3xl mx-auto w-full">
             <IngestionBar
               chatValue={chatInput}
               loading={ingesting}
@@ -199,6 +246,7 @@ function Home() {
           </div>
         </main>
       )}
+      </div>
     </div>
   );
 }

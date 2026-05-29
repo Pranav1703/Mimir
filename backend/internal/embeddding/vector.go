@@ -19,7 +19,7 @@ var (
 )
 
 var httpClient = &http.Client{
-	Timeout: 10 * time.Second,
+	Timeout: 60 * time.Second,
 }
 
 type OllamaEmbedRequest struct {
@@ -41,7 +41,7 @@ func initConfig() {
 func Generate(ctx context.Context, text string) ([]float32, error) {
 
 	configOnce.Do(initConfig)
-	
+
 	reqPayload := OllamaEmbedRequest{
 		Model: modelName,
 		Input: text,

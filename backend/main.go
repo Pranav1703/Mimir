@@ -4,7 +4,7 @@ import (
 	"Briefly/internal/database"
 	"Briefly/internal/handlers"
 	"Briefly/internal/server"
-	"Briefly/internal/utils"
+
 	"os"
 	"os/signal"
 	"syscall"

@@ -109,9 +109,9 @@ func (h *Handler)ProcessLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("data parsed from ", reqBody.Url, ":\n",data.Content)
-	log.Println(data.Excerpt)
-	log.Println(data.Length)
-	log.Println(data.Title)
+	log.Println("summary?: ",data.Excerpt)
+	log.Println("text lenght: ",data.Length)
+	log.Println("Title: ",data.Title)
 
 	chunks := embedding.ChunkText(data.TextContent, 1000)
 	for _, chunk := range chunks {
