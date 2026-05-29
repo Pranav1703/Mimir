@@ -61,5 +61,5 @@ func (s *Server) StopServer(){
     if err := s.http.Shutdown(ctx); err != nil {
         log.Printf("server forced shutdown: %v", err)
     }
-	handlers.ShutdownBrowser()
+	handlers.
 }

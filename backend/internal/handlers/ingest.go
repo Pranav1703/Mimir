@@ -2,20 +2,20 @@ package handlers
 
 import (
 	embedding "Briefly/internal/embeddding"
+	"Briefly/internal/utils"
 	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"net/url"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
-	"strconv"
+
 	readability "codeberg.org/readeck/go-readability"
 	"github.com/chromedp/chromedp"
-
-	"github.com/ledongthuc/pdf"
-	"github.com/nguyenthenguyen/docx"
 )
 
 type LinkReqBody struct {
@@ -142,14 +142,13 @@ func (h *Handler)ProcessLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h * Handler)ProcessFile(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, 10LineMem<<20)
+	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		http.Error(w, "File too large (Max 10MB)", http.StatusBadRequest)
 		return
 	}
 
-	// 2. Retrieve the file from form data
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, "Failed to retrieve file from form-data", http.StatusBadRequest)
@@ -160,15 +159,14 @@ func (h * Handler)ProcessFile(w http.ResponseWriter, r *http.Request) {
 	filename := handler.Filename
 	ext := strings.ToLower(filepath.Ext(filename))
 
-	// 3. Extract pure text based on extension
 	var textContent string
 	switch ext {
 	case ".txt", ".md":
-		textContent, err = parseTextFile(file)
+		textContent, err = utils.ParseTextFile(file)
 	case ".pdf":
-		textContent, err = parsePDFFile(file, handler.Size)
+		textContent, err = utils.ParsePDFFile(file, handler.Size)
 	case ".docx":
-		textContent, err = parseDocxFile(file, handler.Size)
+		textContent, err = utils.ParseDocxFile(file, handler.Size)
 	default:
 		http.Error(w, "Unsupported file format. Use PDF, DOCX, TXT, or MD.", http.StatusUnsupportedMediaType)
 		return
@@ -180,7 +178,6 @@ func (h * Handler)ProcessFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 4. Reuse your existing RAG Pipeline!
 	chunks := embedding.ChunkText(textContent, 1000)
 	
 	// Track a mock URL style string for your DB schema requirement
