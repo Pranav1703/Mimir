@@ -15,7 +15,7 @@ export default function IngestionBar({
   onChatChange: (v: string) => void;
   onChatSubmit: (e: React.FormEvent) => void;
   onLinkAdd: (url: string) => void;
-  onFilePick: (name: string) => void;
+  onFilePick: (file: File) => void;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [linkValue, setLinkValue] = useState("");
@@ -25,7 +25,7 @@ export default function IngestionBar({
   function handleFilePick(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (f) {
-      onFilePick(f.name);
+      onFilePick(f);
       setMenuOpen(false);
     }
   }

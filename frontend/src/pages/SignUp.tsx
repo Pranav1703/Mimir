@@ -36,6 +36,28 @@ function SignUp() {
         className="w-full max-w-sm"
       >
         <motion.h1
+          className="text-4xl sm:text-5xl font-bold tracking-widest uppercase text-center mb-2"
+          style={{
+            textShadow: "0 0 30px var(--accent), 0 0 60px color-mix(in srgb, var(--accent) 40%, transparent)",
+            color: "var(--accent)",
+          }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+        >
+          Briefly
+        </motion.h1>
+
+        <motion.p
+          className="text-(--text-muted) text-sm text-center mb-8 leading-relaxed"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
+          Your unified knowledge base. Save links, docs, and notes to chat with your second brain.
+        </motion.p>
+
+        <motion.h1
           className="text-3xl font-bold tracking-widest uppercase text-center mb-8"
           style={{
             textShadow: "0 0 20px var(--accent), 0 0 40px color-mix(in srgb, var(--accent) 40%, transparent)",

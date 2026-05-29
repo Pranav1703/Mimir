@@ -19,27 +19,55 @@ function Home() {
   const [chatLoading, setChatLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  function handleLinkAdd(url: string) {
+  async function handleLinkAdd(url: string) {
+    if (!url.trim()) return;
+    setIngesting(true);
     try {
-      setIngesting(true);
-      setTimeout(async() => {
-        setIngesting(false);
-        setMode("chat");
-        await axios.post(`${import.meta.env.VITE_SERVER_URL}/ingest/link`, {url: url}, {withCredentials: true})
-        setMessages([{ role: "bot", content: `Summarized <b>${url}<b>. Ask me anything about it!` }]);
-      }, 1500);      
+      // Correct Flow: Await the response from the server FIRST, then modify view states
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/ingest/link`, 
+        { url: url }, 
+        { withCredentials: true }
+      );
+      
+      setMode("chat");
+      setMessages([{ role: "bot", content: `Summarized <b>${url}</b>. Ask me anything about it!` }]);
     } catch (error) {
-      console.log(error)
+      console.error("Link ingestion failed:", error);
+      setMessages([{ role: "bot", content: "Failed to ingest link. Please ensure your backend and Ollama are fully active." }]);
+      setMode("chat");
+    } finally {
+      setIngesting(false);
     }
   }
 
-  function handleFilePick(name: string) {
+async function handleFilePick(fileObj: File) {
+    if (!fileObj) return;
     setIngesting(true);
-    setTimeout(() => {
-      setIngesting(false);
+    
+    // Prepare the multi-part multipart form structure for Go backend ingestion processing
+    const formData = new FormData();
+    formData.append("file", fileObj);
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/ingest/file`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
+      
       setMode("chat");
-      setMessages([{ role: "bot", content: `Summarized **${name}**. Ask me anything about it!` }]);
-    }, 1500);
+      setMessages([{ role: "bot", content: `Summarized file **${fileObj.name}**. Ask me anything about it!` }]);
+    } catch (error) {
+      console.error("File parsing ingestion processing failed:", error);
+      setMessages([{ role: "bot", content: `Failed to vectorize file ${fileObj.name}.` }]);
+      setMode("chat");
+    } finally {
+      setIngesting(false);
+    }
   }
 
   async function handleChat(e: React.FormEvent) {
@@ -47,6 +75,7 @@ function Home() {
     if (!chatInput.trim()) return;
     const msg = chatInput;
     setChatInput("");
+    setMode("chat")
     setMessages((prev) => [...prev, { role: "user", content: msg }]);
     setChatLoading(true);
     try {
@@ -91,34 +120,6 @@ function Home() {
         {mode === "start" ? (
           <div className="flex-1 flex flex-col">
           <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-center w-full max-w-lg"
-            >
-              <motion.h1
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-widest uppercase mb-6"
-                style={{
-                  textShadow: "0 0 30px var(--accent), 0 0 60px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 90px color-mix(in srgb, var(--accent) 20%, transparent)",
-                  color: "var(--accent)",
-                }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, delay: 0.2 }}
-              >
-                Briefly
-              </motion.h1>
-
-              <motion.p
-                className="text-(--text-muted) mb-10 leading-relaxed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                Your unified knowledge base. Save links, docs, and notes to chat with your second brain.
-              </motion.p>
-            </motion.div>
 
             <AnimatePresence>
               {ingesting && (

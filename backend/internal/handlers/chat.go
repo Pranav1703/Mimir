@@ -57,7 +57,7 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a safe operational context deadline for the RAG chain
-	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 2 * time.Minute)
 	defer cancel()
 
 

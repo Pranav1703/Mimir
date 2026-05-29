@@ -5,6 +5,17 @@ import { getTitles } from "../api/articles";
 export default function Sidebar({ open }: { open: boolean }) {
   const [titles, setTitles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  async function copyTitle(title: string, index: number) {
+    try {
+      await navigator.clipboard.writeText(title);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 1500);
+    } catch {
+      // clipboard not available
+    }
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -28,7 +39,7 @@ export default function Sidebar({ open }: { open: boolean }) {
         >
           <div className="px-4 py-4 border-b" style={{ borderColor: "color-mix(in srgb, var(--accent) 13%, transparent)" }}>
             <h2 className="text-xs uppercase tracking-widest" style={{ color: "var(--text-dim)" }}>
-              Articles
+              Saved Articles
             </h2>
           </div>
 
@@ -54,14 +65,15 @@ export default function Sidebar({ open }: { open: boolean }) {
                 {titles.map((title, i) => (
                   <motion.li
                     key={i}
-                    className="px-3 py-2 rounded-lg text-sm truncate cursor-pointer transition-colors"
+                    className="px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors break-words"
                     style={{ color: "var(--text-muted)" }}
                     whileHover={{
                       backgroundColor: "color-mix(in srgb, var(--accent) 8%, transparent)",
                       color: "var(--text-secondary)",
                     }}
+                    onClick={() => copyTitle(title, i)}
                   >
-                    {title}
+                    {copiedIndex === i ? "Copied!" : title}
                   </motion.li>
                 ))}
               </ul>
