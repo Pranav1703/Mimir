@@ -164,7 +164,7 @@ function Chat() {
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto px-4 pb-6 w-full">
+        <div className="max-w-3xl mx-auto px-4 pb-10 w-full">
           <motion.form
             onSubmit={handleChat}
             className="flex gap-3"

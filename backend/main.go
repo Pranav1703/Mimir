@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	utils.LoadEnv()
+
 	sig  := make(chan os.Signal,1)
 	signal.Notify(sig, syscall.SIGABRT, syscall.SIGINT, syscall.SIGTERM)
 

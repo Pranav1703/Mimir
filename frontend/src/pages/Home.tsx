@@ -66,35 +66,39 @@ function Home() {
       <Header />
 
       {mode === "start" ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-center w-full max-w-lg"
-          >
-            <motion.h1
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-widest uppercase mb-6"
-              style={{
-                textShadow: "0 0 30px var(--accent), 0 0 60px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 90px color-mix(in srgb, var(--accent) 20%, transparent)",
-                color: "var(--accent)",
-              }}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.2 }}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-center w-full max-w-lg"
             >
-              Briefly
-            </motion.h1>
+              <motion.h1
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-widest uppercase mb-6"
+                style={{
+                  textShadow: "0 0 30px var(--accent), 0 0 60px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 90px color-mix(in srgb, var(--accent) 20%, transparent)",
+                  color: "var(--accent)",
+                }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.2 }}
+              >
+                Briefly
+              </motion.h1>
 
-            <motion.p
-              className="text-(--text-muted) mb-10 leading-relaxed"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              Your unified knowledge base. Save links, docs, and notes to chat with your second brain.
-            </motion.p>
+              <motion.p
+                className="text-(--text-muted) mb-10 leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                Your unified knowledge base. Save links, docs, and notes to chat with your second brain.
+              </motion.p>
+            </motion.div>
+          </div>
 
+          <div className="px-4 pb-10 max-w-lg mx-auto w-full">
             <IngestionBar
               chatValue={chatInput}
               loading={ingesting}
@@ -103,23 +107,10 @@ function Home() {
               onLinkAdd={handleLinkAdd}
               onFilePick={handleFilePick}
             />
-          </motion.div>
+          </div>
         </div>
       ) : (
         <main className="flex-1 flex flex-col">
-          <div className="border-b px-4 py-3" style={{ borderColor: "color-mix(in srgb, var(--accent) 13%, transparent)" }}>
-            <div className="max-w-3xl mx-auto">
-              <IngestionBar
-                chatValue={chatInput}
-                loading={ingesting}
-                onChatChange={setChatInput}
-                onChatSubmit={handleChat}
-                onLinkAdd={handleLinkAdd}
-                onFilePick={handleFilePick}
-              />
-            </div>
-          </div>
-
           <div className="flex-1 overflow-y-auto">
             <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
               <AnimatePresence mode="popLayout">
@@ -191,6 +182,19 @@ function Home() {
                   </div>
                 </motion.div>
               )}
+            </div>
+          </div>
+
+          <div className="border-t px-4 py-4 pb-8" style={{ borderColor: "color-mix(in srgb, var(--accent) 13%, transparent)" }}>
+            <div className="max-w-3xl mx-auto">
+              <IngestionBar
+                chatValue={chatInput}
+                loading={ingesting}
+                onChatChange={setChatInput}
+                onChatSubmit={handleChat}
+                onLinkAdd={handleLinkAdd}
+                onFilePick={handleFilePick}
+              />
             </div>
           </div>
         </main>

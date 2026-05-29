@@ -36,10 +36,9 @@ func IngestRouter(r *chi.Mux, db *pgxpool.Pool) {
 
 func ChatRouter(r *chi.Mux, db * pgxpool.Pool) {
 	h := handlers.New(db)
-
-	r.Route("/chat", func(r chi.Router) {
-		r.Use(middlewares.VerifyToken)
-		r.Get("/titles", h.GetTitles)
-
-	})
+	r.Use(middlewares.VerifyToken)
+	
+	r.Get("/chat/talk", h.Chat)
+	r.Get("/titles", h.GetTitles)
 }
+
