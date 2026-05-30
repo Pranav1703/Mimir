@@ -179,7 +179,11 @@ func (h * Handler)ProcessFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	chunks := embedding.ChunkText(textContent, 1000)
-	
+	if len(chunks) == 0 {
+	    log.Println("File produced 0 chunks after parsing:", filename)
+	    http.Error(w, "No extractable text found in file", http.StatusBadRequest)
+	    return
+	}
 	// Track a mock URL style string for your DB schema requirement
 	fileVirtualURL := "file://" + filename 
 

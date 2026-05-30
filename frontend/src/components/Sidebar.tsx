@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { getTitles } from "../api/articles";
 
-export default function Sidebar({ open }: { open: boolean }) {
+export default function Sidebar({ open, onClose }: { open: boolean; onClose?: () => void }) {
   const [titles, setTitles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -30,17 +30,31 @@ export default function Sidebar({ open }: { open: boolean }) {
     <AnimatePresence>
       {open && (
         <motion.aside
-          className="absolute left-0 inset-y-0 w-64 z-10 border-r overflow-hidden flex flex-col bg-(--bg-primary)"
+          className="w-64 shrink-0 border-l overflow-hidden flex flex-col bg-(--bg-primary)"
           style={{ borderColor: "color-mix(in srgb, var(--accent) 13%, transparent)" }}
-          initial={{ opacity: 0, x: -64 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -64 }}
+          initial={{ opacity: 0, width: 0 }}
+          animate={{ opacity: 1, width: 256 }}
+          exit={{ opacity: 0, width: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         >
-          <div className="px-4 py-4 border-b" style={{ borderColor: "color-mix(in srgb, var(--accent) 13%, transparent)" }}>
+          <div className="px-4 py-4 border-b flex items-center justify-between" style={{ borderColor: "color-mix(in srgb, var(--accent) 13%, transparent)" }}>
             <h2 className="text-xs uppercase tracking-widest" style={{ color: "var(--text-dim)" }}>
-              Saved Articles
+              Saved Documents &amp; Articles
             </h2>
+            {onClose && (
+              <motion.button
+                onClick={onClose}
+                className="shrink-0 rounded-lg w-6 h-6 flex items-center justify-center transition-colors"
+                style={{ color: "var(--text-dim)" }}
+                whileHover={{ scale: 1.15, color: "var(--text-secondary)" }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </motion.button>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto py-2">

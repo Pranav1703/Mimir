@@ -20,7 +20,6 @@ export default function IngestionBar({
   const [menuOpen, setMenuOpen] = useState(false);
   const [linkValue, setLinkValue] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFilePick(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -112,7 +111,7 @@ export default function IngestionBar({
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                       >
-                        Add
+                        +
                       </motion.button>
                     </div>
                   </div>
@@ -142,7 +141,7 @@ export default function IngestionBar({
         </div>
 
         <input
-          ref={inputRef}
+          ref={fileRef}
           type="file"
           accept=".pdf,.txt,.md,.docx"
           className="hidden"

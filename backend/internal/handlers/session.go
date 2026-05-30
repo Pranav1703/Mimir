@@ -4,6 +4,7 @@ import (
 	"Briefly/internal/middlewares"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -46,7 +47,7 @@ func (h *Handler) GetSessions(w http.ResponseWriter, r *http.Request) {
 type chatMsg struct {
 	Role string `json:"role"`
 	Content string `json:"content"`
-	Created_at string `json:"createdAt"`
+	Created_at time.Time `json:"createdAt"`
 }
 
 type msgResp struct {

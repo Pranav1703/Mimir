@@ -48,7 +48,7 @@ func (s *Server) addRoutes(){
 
 func (s *Server) StartServer() {
     s.http = &http.Server{
-        Addr:    "127.0.0.1:3002",
+        Addr:    "0.0.0.0:3002",
         Handler: s.router,
     }
     if err := s.http.ListenAndServe(); err != nil && err != http.ErrServerClosed {
