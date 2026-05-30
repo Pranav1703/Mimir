@@ -9,7 +9,7 @@ import (
 
 func GetEnv(key string) string {
 	if err := godotenv.Load(); err != nil {
-		log.Println("Note: No .env file detected; falling back to system environment variables.")
+		log.Println("Note: No .env file detected;")
 	}
 	value, ok := os.LookupEnv(key)
 	if !ok {

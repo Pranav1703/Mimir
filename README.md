@@ -32,7 +32,7 @@ Copy the example and fill in your values:
 cp .env.example .env
 ```
 
-Edit `.env` — at minimum set `JWT_SECRET` to a random string and `OPENROUTER_API_KEY` to your key.
+Edit `.env` — set correct values.
 
 3. **Start the stack**
 
