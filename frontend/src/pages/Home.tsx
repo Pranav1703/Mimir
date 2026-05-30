@@ -50,7 +50,7 @@ async function handleFilePick(fileObj: File) {
     formData.append("file", fileObj);
 
     try {
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/ingest/file`,
         formData,
         {

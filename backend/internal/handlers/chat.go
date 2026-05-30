@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"strings"
 	"Briefly/internal/embeddding"
+	"Briefly/internal/middlewares"
 	"Briefly/internal/utils"
 	"bytes"
 	"context"
@@ -10,19 +10,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/pgvector/pgvector-go"
 )
-
-
-type Msg struct {
-	Message string `json:"message"`
-}
-
-type ChatResponse struct {
-	Response string `json:"response"`
-}
 
 // Standard OpenAI structural payloads used by OpenRouter
 type OpenAIChatRequest struct {
@@ -41,15 +35,31 @@ type OpenAIChatResponse struct {
 	} `json:"choices"`
 }
 
+type ChatRequest struct {
+    Message    string `json:"message"`
+    SessionID  string `json:"session_id,omitempty"`  // empty = new session
+}
+type ChatResponse struct {
+    Response   string `json:"response"`
+    SessionID  string `json:"session_id"`            
+}
+
 func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 
-	var reqBody Msg
+	claims := middlewares.UserFromContext(r.Context())
+	userID, err := uuid.Parse(claims.Id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid user identity profile"})
+		return
+	}
+	var reqBody ChatRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request format"})
 		return
 	}
-
+	
 	if reqBody.Message == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Message content cannot be empty"})
@@ -60,6 +70,66 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 2 * time.Minute)
 	defer cancel()
 
+	var sessionID uuid.UUID
+
+	if reqBody.SessionID == "" {
+		titleSnippet := reqBody.Message
+    	if len(titleSnippet) > 40 {
+    	    titleSnippet = titleSnippet[:37] + "..."
+    	}
+    	titleSnippet = strings.TrimSpace(titleSnippet)
+
+		err = h.DB.QueryRow(ctx,
+			"INSERT INTO chat_sessions (user_id, title) VALUES ($1, $2) RETURNING id",
+			userID, titleSnippet,
+		).Scan(&sessionID)
+		if err != nil {
+			log.Println("Database session creation failed:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to initialize conversational thread"})
+			return
+		}
+	} else {
+		sessionID, err = uuid.Parse(reqBody.SessionID)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Invalid session identifier specification"})
+			return
+		}
+
+		var dbUserID uuid.UUID
+		err = h.DB.QueryRow(ctx,
+			"SELECT user_id FROM chat_sessions WHERE id = $1",
+			sessionID,
+		).Scan(&dbUserID)
+
+		if err == pgx.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Chat session thread not found"})
+			return
+		} else if err != nil {
+			log.Println("Session lookup security error:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if dbUserID != userID {
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Access denied to requested session data thread"})
+			return
+		}
+	}
+
+	_, err = h.DB.Exec(ctx,
+		"INSERT INTO chat_messages (session_id, role, content) VALUES ($1, 'user', $2)",
+		sessionID, reqBody.Message,
+	)
+	if err != nil {
+		log.Println("Failed to record inbound message history record:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Database error saving chat history"})
+		return
+	}
 
 	queryEmbedding, err := embedding.Generate(ctx, reqBody.Message)
 	if err != nil {
@@ -145,8 +215,27 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	chatbotResponse := apiResponse.Choices[0].Message.Content
+
+	_, err = h.DB.Exec(ctx,
+		"INSERT INTO chat_messages (session_id, role, content) VALUES ($1, 'chatbot', $2)",
+		sessionID, chatbotResponse,
+	)
+	if err != nil {
+		log.Println("Failed to save outgoing LLM generated context:", err)
+	}
+
+	_, err = h.DB.Exec(ctx,
+		"UPDATE chat_sessions SET updated_at = NOW() WHERE id = $1",
+		sessionID,
+	)
+	if err != nil {
+		log.Println("Failed to refresh session updated_at metadata node:", err)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(ChatResponse{
-		Response: apiResponse.Choices[0].Message.Content,
+		Response:  chatbotResponse,
+		SessionID: sessionID.String(),
 	})
 }
